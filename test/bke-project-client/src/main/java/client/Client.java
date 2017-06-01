@@ -1,4 +1,4 @@
-package server;
+package client;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -12,8 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
-import client.Protocol;
+import server.Protocol;
 
 public class Client {
 
