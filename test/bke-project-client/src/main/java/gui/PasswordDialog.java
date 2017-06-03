@@ -18,7 +18,43 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class PasswordValidationDialog extends JDialog {
+import db.Encrypter;
+
+public class PasswordDialog implements Runnable {
+	
+	private String authText = "";
+
+	public String getAuthTexts() {
+		return authText;
+	}
+
+	@Override
+	public void run() {
+		PasswordDialogFrame dialog = new PasswordDialogFrame();
+		this.authText = dialog.getAuthText();
+	}
+}
+
+class PasswordDialogFrame extends JFrame {
+	private static final long serialVersionUID = 6546729298782148012L;
+	private PasswordValidation passDialog;
+	private String authText = "";
+
+	public String getAuthText() {
+		return authText;
+	}
+
+	public void setAuthText(String authText) {
+		this.authText = authText;
+	}
+
+	public PasswordDialogFrame() {
+		passDialog = new PasswordValidation(this, true);
+		passDialog.setVisible(true);
+	}
+}
+
+class PasswordValidation extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JLabel jlblUsername = new JLabel("Username");
@@ -32,11 +68,11 @@ public class PasswordValidationDialog extends JDialog {
 
 	private final JLabel jlblStatus = new JLabel(" ");
 
-	public PasswordValidationDialog() {
+	public PasswordValidation() {
 		this(null, true);
 	}
 
-	public PasswordValidationDialog(final JFrame parent, boolean modal) {
+	public PasswordValidation(PasswordDialogFrame parent, boolean modal) {
 		super(parent, modal);
 
 		JPanel p3 = new JPanel(new GridLayout(2, 1));
@@ -78,8 +114,9 @@ public class PasswordValidationDialog extends JDialog {
 		jbtOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (Arrays.equals("stackoverflow".toCharArray(), jpfPassword.getPassword())
-						&& "stackoverflow".equals(jtfUsername.getText())) {
+				if (Arrays.equals("test".toCharArray(), jpfPassword.getPassword())
+						&& "test".equals(jtfUsername.getText())) {
+					parent.setAuthText(jtfUsername.getText() + ";" + Encrypter.cryptWithMD5(jpfPassword.getPassword().toString()));
 					parent.setVisible(true);
 					setVisible(false);
 				} else {

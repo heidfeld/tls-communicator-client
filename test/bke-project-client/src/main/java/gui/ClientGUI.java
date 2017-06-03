@@ -14,6 +14,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JLabel label;
 	private JTextField messageField;
+	private JPasswordField passwordField;
 	private JTextField serverField, portField;
 	private JButton login, logout, whoIsIn;
 	private JTextArea textArea;
@@ -28,7 +29,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 		defaultPort = port;
 		defaultHost = host;
 		
-		JPanel northPanel = new JPanel(new GridLayout(3,1));
+		JPanel northPanel = new JPanel(new GridLayout(4,1));
 		JPanel serverAndPort = new JPanel(new GridLayout(1, 5, 1, 3));
 		serverField = new JTextField(host);
 		portField = new JTextField("" + port);
@@ -41,11 +42,13 @@ public class ClientGUI extends JFrame implements ActionListener {
 		serverAndPort.add(new JLabel(""));
 		northPanel.add(serverAndPort);
 
-		label = new JLabel("Enter your username below", SwingConstants.CENTER);
+		label = new JLabel("Enter your username and password below", SwingConstants.CENTER);
 		northPanel.add(label);
 		messageField = new JTextField("Anonymous");
 		messageField.setBackground(Color.WHITE);
 		northPanel.add(messageField);
+		passwordField = new JPasswordField();
+		northPanel.add(passwordField);
 		add(northPanel, BorderLayout.NORTH);
 
 		textArea = new JTextArea("Welcome to the Chat room\n", 80, 80);
@@ -70,7 +73,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 		add(southPanel, BorderLayout.SOUTH);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(600, 600);
+		setSize(600, 400);
 		setVisible(true);
 		messageField.requestFocus();
 
@@ -114,9 +117,14 @@ public class ClientGUI extends JFrame implements ActionListener {
 		}
 
 		if(o == login) {
+			String password = "";
+			if(passwordField.getPassword().length > 0) {
+				password = passwordField.getPassword().toString().trim();
+			}
 			String username = messageField.getText().trim();
 			if(username.length() == 0)
 				return;
+			
 			String server = serverField.getText().trim();
 			if(server.length() == 0)
 				return;
@@ -134,18 +142,23 @@ public class ClientGUI extends JFrame implements ActionListener {
 			client = new Client(server, port, username, this);
 			if(!client.start()) 
 				return;
-			messageField.setText("");
-			label.setText("Enter your message below");
-			connected = true;
-			
-			login.setEnabled(false);
-			logout.setEnabled(true);
-			whoIsIn.setEnabled(true);
-			serverField.setEditable(false);
-			portField.setEditable(false);
-			messageField.addActionListener(this);
+			client.sendMessage(new ChatMessage(ChatMessage.LOGIN, "test" + ";" + "test"));
 		}
+	}
 
+	public void setFieldsAfterAuthorization() {
+		messageField.setText("");
+		label.setText("Enter your message below");
+		connected = true;
+		
+		login.setEnabled(false);
+		logout.setEnabled(true);
+		whoIsIn.setEnabled(true);
+		serverField.setEditable(false);
+		portField.setEditable(false);
+		passwordField.setEditable(false);
+		passwordField.setVisible(false);
+		messageField.addActionListener(this);
 	}
 
 	public static void main(String[] args) {
