@@ -3,6 +3,7 @@ package gui;
 import javax.swing.*;
 
 import client.Client;
+import db.Encrypter;
 import entity.ChatMessage;
 
 import java.awt.*;
@@ -81,7 +82,15 @@ public class ClientGUI extends JFrame implements ActionListener {
 
 	// method for client to append the text
 	public void append(String str) {
-		textArea.append(str);
+		String auth = str.trim();
+		if(auth.equalsIgnoreCase("Authorized")) {
+			textArea.append("You are successfully authorized, chat started!\n");
+			setFieldsAfterAuthorization();
+		} else if (auth.equalsIgnoreCase("Unauthorized")) {
+			textArea.append("Unauthorized ! Insert valid login and password.\n");
+		} else {
+			textArea.append(str);
+		}
 		textArea.setCaretPosition(textArea.getText().length() - 1);
 	}
 
@@ -117,9 +126,15 @@ public class ClientGUI extends JFrame implements ActionListener {
 		}
 
 		if(o == login) {
-			String password = "";
-			if(passwordField.getPassword().length > 0) {
-				password = passwordField.getPassword().toString().trim();
+			char[] charPassword = passwordField.getPassword();
+			StringBuilder builder = new StringBuilder();
+			if(charPassword.length > 0) {
+				builder = new StringBuilder();
+				for (char c : charPassword) {
+					builder.append(c);
+				}
+			} else {
+				return;
 			}
 			String username = messageField.getText().trim();
 			if(username.length() == 0)
@@ -142,11 +157,11 @@ public class ClientGUI extends JFrame implements ActionListener {
 			client = new Client(server, port, username, this);
 			if(!client.start()) 
 				return;
-			client.sendMessage(new ChatMessage(ChatMessage.LOGIN, "test" + ";" + "test"));
+			client.sendMessage(new ChatMessage(ChatMessage.LOGIN, username + ";" + Encrypter.cryptWithMD5(builder.toString())));
 		}
 	}
 
-	public void setFieldsAfterAuthorization() {
+	private void setFieldsAfterAuthorization() {
 		messageField.setText("");
 		label.setText("Enter your message below");
 		connected = true;
