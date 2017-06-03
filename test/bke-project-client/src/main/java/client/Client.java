@@ -1,19 +1,26 @@
 package client;
 
-import java.net.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.io.*;
-import java.util.*;
+import java.util.Scanner;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import db.DataBaseUtil;
 import entity.ChatMessage;
 import gui.ClientGUI;
 
@@ -71,7 +78,7 @@ public class Client {
 
 	private void initializeClientSocket() throws KeyStoreException, IOException, NoSuchAlgorithmException,
 			CertificateException, FileNotFoundException, KeyManagementException, UnknownHostException {
-		char[] password = { 't', 'e', 's', 't', '1', '2', '3'};
+		char[] password = DataBaseUtil.getTlsPassword();
 		KeyStore ks = KeyStore.getInstance("PKCS12");
 		try (InputStream input = new FileInputStream("client.pfx")) {
 			ks.load(input, password);
@@ -95,6 +102,9 @@ public class Client {
 	public void sendMessage(ChatMessage msg) {
 		try {
 			sOutput.writeObject(msg);
+			if(msg.getType() == ChatMessage.LOGOUT) {
+				disconnect();
+			}
 		} catch (IOException e) {
 			display("Exception writing to server: " + e);
 		}
@@ -181,13 +191,11 @@ public class Client {
 							clientGui.append(msg);
 						}
 					}
-				} catch (IOException e) {
-					display("Server has close the connection: " + e);
+				} catch (Exception e) {
+					display("Server has close the connection.");
 					if (clientGui != null)
 						clientGui.connectionFailed();
 					break;
-				}
-				catch (ClassNotFoundException e2) {
 				}
 			}
 		}

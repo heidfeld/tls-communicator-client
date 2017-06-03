@@ -29,7 +29,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 		defaultHost = host;
 		
 		JPanel northPanel = new JPanel(new GridLayout(3,1));
-		JPanel serverAndPort = new JPanel(new GridLayout(1,5, 1, 3));
+		JPanel serverAndPort = new JPanel(new GridLayout(1, 5, 1, 3));
 		serverField = new JTextField(host);
 		portField = new JTextField("" + port);
 		portField.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -100,6 +100,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 		Object o = e.getSource();
 		if(o == logout) {
 			client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, ""));
+			System.exit(0);
 			return;
 		}
 		if(o == whoIsIn) {

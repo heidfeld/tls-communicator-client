@@ -3,12 +3,11 @@
   <groupId>com.lukasz.bke.project</groupId>
   <artifactId>bke-project-client</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <dependencies>
-  		<dependency>
-			<groupId>com.lukasz.bke.project.server</groupId>
-			<artifactId>bke-project-server</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
+	<dependencies>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.18.0</version>
 		</dependency>
-  </dependencies>
+	</dependencies>
 </project>
